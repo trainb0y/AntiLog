@@ -1,0 +1,8 @@
+main: io.github.trainb0y1.antilog.AntiLog
+name: AntiLog
+version: 0.1.0-dev
+description: A simple anti combat-log plugin
+api-version: 1.18.2
+author: trainb0y1
+website: https://github.com/trainb0y1/AntiLog
+prefix: AntiLog
