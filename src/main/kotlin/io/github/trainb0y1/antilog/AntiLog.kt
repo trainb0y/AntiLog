@@ -40,8 +40,7 @@ class AntiLog: JavaPlugin(), Listener {
 
 	@EventHandler
 	fun onPlayerLogIn(event: PlayerJoinEvent) {
-		if (!deadPlayers.containsKey(event.player.uniqueId)) return
-		val killer = server.getOfflinePlayer(deadPlayers[event.player.uniqueId]!!)
+		val killer = server.getOfflinePlayer(deadPlayers[event.player.uniqueId] ?: return)
 		event.player.sendMessage("While you were offline you were killed by ${killer.name}")
 		deadPlayers.remove(event.player.uniqueId)
 		event.player.inventory.clear()
