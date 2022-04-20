@@ -1,5 +1,6 @@
 package io.github.trainb0y1.antilog
 
+import org.bukkit.GameMode
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.ArmorStand
 import org.bukkit.event.EventHandler
@@ -22,6 +23,7 @@ class AntiLog: JavaPlugin(), Listener {
 
 	@EventHandler
 	fun onPlayerLogOut(event: PlayerQuitEvent) {
+		if (event.player.gameMode != GameMode.SURVIVAL) return
 		// Have to store the inventory as it isn't accessible in OfflinePlayer
 		val stand = event.player.world.spawn(event.player.location, ArmorStand::class.java)
 		stands[stand] = Pair(event.player.uniqueId, event.player.inventory)
@@ -57,5 +59,6 @@ class AntiLog: JavaPlugin(), Listener {
 		}
 		stands.remove(stand)
 		deadPlayers[player.uniqueId] = stand.killer?.uniqueId
+		event.drops.clear() // don't want to drop the stand
 	}
 }
