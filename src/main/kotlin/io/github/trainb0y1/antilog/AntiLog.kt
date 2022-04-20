@@ -52,7 +52,7 @@ class AntiLog: JavaPlugin(), Listener {
 		val player = this.server.getOfflinePlayer(stands[stand]?.first ?: return)
 		val inventory = stands[stand]!!.second
 		val location = event.entity.location
-		inventory.filter{!it.containsEnchantment(Enchantment.VANISHING_CURSE)}.forEach {
+		inventory.filter{!(it?.containsEnchantment(Enchantment.VANISHING_CURSE) ?: true)}.forEach {
 			location.world.dropItem(location, it)
 		}
 		stands.remove(stand)
