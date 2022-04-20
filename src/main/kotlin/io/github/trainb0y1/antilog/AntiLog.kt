@@ -17,14 +17,23 @@ class AntiLog: JavaPlugin(), Listener {
 	val deadPlayers = mutableMapOf<UUID, UUID?>()
 
 	override fun onEnable() {
-		this.server.pluginManager.registerEvents(this, this)
+		server.pluginManager.registerEvents(this, this)
 	}
 
 	@EventHandler
 	fun onPlayerLogOut(event: PlayerQuitEvent) {
 		// Have to store the inventory as it isn't accessible in OfflinePlayer
-		stands[event.player.world.spawn(event.player.location, ArmorStand::class.java)] =
-			Pair(event.player.uniqueId, event.player.inventory)
+		val stand = event.player.world.spawn(event.player.location, ArmorStand::class.java)
+		stands[stand] = Pair(event.player.uniqueId, event.player.inventory)
+
+		server.scheduler.scheduleSyncDelayedTask(this,
+			Runnable {
+				// Confirm that it still exists
+				stands[stand] ?: return@Runnable
+				stands.remove(stand)
+				stand.health = 0.0
+			}, 1200 // 1 minute
+		)
 	}
 
 	@EventHandler
@@ -43,12 +52,10 @@ class AntiLog: JavaPlugin(), Listener {
 		val player = this.server.getOfflinePlayer(stands[stand]?.first ?: return)
 		val inventory = stands[stand]!!.second
 		val location = event.entity.location
-
 		inventory.filter{!it.containsEnchantment(Enchantment.VANISHING_CURSE)}.forEach {
 			location.world.dropItem(location, it)
 		}
 		stands.remove(stand)
-
 		deadPlayers[player.uniqueId] = stand.killer?.uniqueId
 	}
 }
