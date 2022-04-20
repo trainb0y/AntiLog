@@ -41,7 +41,13 @@ class AntiLog: JavaPlugin(), Listener {
 
 	@EventHandler
 	fun onPlayerLogIn(event: PlayerJoinEvent) {
+		// If the player has an armor stand, despawn it
+		// Note this would only remove one, if somehow they got multiple that would be an issue
+		stands.remove(stands.filter { it.value.first == event.player.uniqueId }.keys.first())
+
 		if (!deadPlayers.containsKey(event.player.uniqueId)) return
+
+		// Kill the player, send a message, and clear their inventory
 		val killer = run {server.getOfflinePlayer(deadPlayers[event.player.uniqueId] ?: return@run null)}
 		event.player.sendMessage("While you were offline you were killed by ${killer?.name}")
 		deadPlayers.remove(event.player.uniqueId)
