@@ -12,9 +12,10 @@ import org.bukkit.inventory.PlayerInventory
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.UUID
 
-
 class AntiLog: JavaPlugin(), Listener {
 	val stands = mutableMapOf<ArmorStand, Pair<UUID, PlayerInventory>>()
+
+	// Dead player to killer
 	val deadPlayers = mutableMapOf<UUID, UUID?>()
 
 	override fun onEnable() {
@@ -40,8 +41,9 @@ class AntiLog: JavaPlugin(), Listener {
 
 	@EventHandler
 	fun onPlayerLogIn(event: PlayerJoinEvent) {
-		val killer = server.getOfflinePlayer(deadPlayers[event.player.uniqueId] ?: return)
-		event.player.sendMessage("While you were offline you were killed by ${killer.name}")
+		if (!deadPlayers.containsKey(event.player.uniqueId)) return
+		val killer = run {server.getOfflinePlayer(deadPlayers[event.player.uniqueId] ?: return@run null)}
+		event.player.sendMessage("While you were offline you were killed by ${killer?.name}")
 		deadPlayers.remove(event.player.uniqueId)
 		event.player.inventory.clear()
 		event.player.health = 0.0
